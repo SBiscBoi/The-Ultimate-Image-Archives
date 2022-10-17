@@ -41,6 +41,6 @@ pixles = img.load()
 
 for i in range(width):
     for j in range(height):
-        pixles[i, j] = (arr[i*j][0], arr[i*j][1], arr[i*j][2]) #does this work?
+        pixles[i, j] = (arr[i*j][0], arr[i*j][1], arr[i*j][2]) #does this work? no. no it doesn't
 
 img.show()
