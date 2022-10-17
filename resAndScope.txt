@@ -1,0 +1,4 @@
+Resolution: 1920x1080
+Color Format: RGB
+Amount of Colors: 16777216
+Amount of Pixles: 2073600
