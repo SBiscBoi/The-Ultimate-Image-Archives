@@ -1,5 +1,3 @@
-import random
-import sys
 from PIL import Image
 
 width = 1920
