@@ -3,7 +3,7 @@ from PIL import Image
 width = 1920
 height = 1080
 
-file = open("C:\\Users\\Owner\\Desktop\\The-Ultimate-Image-Archives-master\\The-Ultimate-Image-Archives-master\\arrayCont.txt" , "r")
+file = open("arrayCont.txt" , "r")
 line = file.readline()
 
 img = Image.new("RGB", (width, height))
