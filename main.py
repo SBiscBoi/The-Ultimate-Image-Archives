@@ -5,8 +5,12 @@ width = 1920 #default 1920
 height = 1080 #default 1080
 
 #write input to file to be read later
-input = "11142022" #INPUT GOES HERE
+input = "" #INPUT GOES HERE
 inpFile = open("inputFile.txt", "w") #create a new file to send the input to the c++ file
+
+#if empty, assume 0
+if(input == ""):
+    input = "0"
 
 #IF the input is purely digits, then there is no need to convert to ASCII values and it can be directly passed to the c++ file
 #OTHERWISE there must be a character other than a digit and all characters in the input must be converted to ASCII values
