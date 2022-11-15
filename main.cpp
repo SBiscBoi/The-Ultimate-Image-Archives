@@ -12,11 +12,18 @@ int main() {
     const int height = 1080; //TODO: set to read from file later
     const unsigned int totalDigits = width * height * 9;
 
-    string input = "13432987418345762345723958"; //input goes here
+    string input; //input goes here
+    ifstream inputFile ("inputFile.txt");
+    if(!inputFile){ //error handling
+        cout << "unable to read input from file!" << endl;
+        exit(-1);
+    }
+
+    getline(inputFile, input); //store input as string
 
     //format input to readable format 
     while (input.length() % 3 != 0) {
-        input += "0";
+        input = "0" + input; //append 0's to front not back
     }
     
     int pos = 0;
@@ -28,7 +35,7 @@ int main() {
     }
 
     //generate random number with input as seed
-    cout << input.substr(0,3);
+    //cout << input.substr(0,3);
     string seedStr = input.substr(0, 3);
     int seed = stoi(seedStr);
     srand(seed); //set seed
@@ -39,6 +46,7 @@ int main() {
         while (additive.length() < 3) {
             additive = additive.insert(0, "0");
         }
+        //cout << additive << endl;
         input += additive;
     }
    
@@ -69,7 +77,7 @@ int main() {
     if (!arrayFile)
     {
         cout << "Error in creating file!!!";
-        return 0;
+        exit(-2);
     }
 
     for (int i = 0; i < (width * height); i++) {
@@ -80,5 +88,5 @@ int main() {
 
     arrayFile.close();
 
-    return 0;
+    exit(0);
 }
