@@ -1,47 +1,80 @@
 from PIL import Image
 import subprocess
+import tkinter
 
-width = 1920 #default 1920
-height = 1080 #default 1080
+def generate(inp):
+    width = 1920 #default 1920
+    height = 1080 #default 1080
 
-#write input to file to be read later
-input = "" #INPUT GOES HERE
-inpFile = open("inputFile.txt", "w") #create a new file to send the input to the c++ file
+    #write input to file to be read later
+    input = str(inp)
+    inpFile = open("inputFile.txt", "w")
+    if(input.isdigit()):
+        print("Writing digit")
+        inpFile.write(input)
+    else:
+        print("Converting")
+        newInput = ""
+        for i in input:
+            newInput += str(ord(i))
+        #print(newInput)
+        print("Writing ASCII Values")
+        inpFile.write(newInput)
+    inpFile.close()
 
-#if empty, assume 0
-if(input == ""):
-    input = "0"
+    #run c++ prog
+    subprocess.run(["g++", "main.cpp"],shell = True)
+    subprocess.run("a.exe")
 
-#IF the input is purely digits, then there is no need to convert to ASCII values and it can be directly passed to the c++ file
-#OTHERWISE there must be a character other than a digit and all characters in the input must be converted to ASCII values
-if(input.isdigit()):
-    inpFile.write(input) #write to input file used by c++ prog
-else:
-    #this part could be done in the c++ portion later for speed
-    newInput = ""
-    for i in input: #each char in string
-        newInput += str(ord(i)) #grab ASCII value, cast to string
-    inpFile.write(newInput) #NOW write to input file used by c++ prog
-inpFile.close() #good practice
+    #output stuff
+    file = open("arrayCont.txt" , "r")
+    line = file.readline()
 
-#run c++ prog
-subprocess.run(["g++", "main.cpp"],shell = True) #not quite sure what "shell = True" does but StackOverflow said it was good so i'm not gonna ask questions
-subprocess.run("a.exe") #run the compiled c++ file to generate the color values of the final image
+    img = Image.new("RGB", (width, height))
+    pixles = img.load()
 
-#output stuff
-file = open("arrayCont.txt" , "r") #open output file from c++ executable
-line = file.readline()
+    temp = 0
+    for i in range(width):
+        for j in range(height):
+            try:
+                pixles[i, j] = (int(line[(temp):(temp)+3]), int(line[(temp)+4:(temp)+7]), int(line[(temp)+8:(temp)+11])) #does this work?
+                temp += 12
+            except ValueError:
+                print(temp)
+                pixles[i, j] = 0
+    img.show()
 
-img = Image.new("RGB", (width, height))
-pixles = img.load()
+def initWindow(window):
+    if isinstance(window, tkinter.Tk):
+        #formatting
+        root.title("The Ultimate Image Archives") # sets window title
+        root.geometry("512x256") # sets window size (width + "x" + height)
+        root.resizable(False, False) # set wether the window can be resized by the user on the x and y axises
+        #interactable elements/widgits
+        #title text
+        titleText = tkinter.Text(root)
+        titleText.insert('insert', "The Ultimate Image Archives") # make it say stuff
+        titleText.configure(font=("Times New Roman", 32), state='disabled') # set font and size
+        titleText.pack()
+        #seed/input box
+        seedLabel = tkinter.Label(root, text="Seed", font=("Courier", 12)) #TODO: make label look pretty
+        seedLabel.pack()
+        seedLabel.place(bordermode='inside', anchor='n', relx=0.35, rely=0.4)
 
-temp = 0 #acts as a soirt of cursor
-for i in range(width):
-    for j in range(height):
-        try:
-            pixles[i, j] = (int(line[(temp):(temp)+3]), int(line[(temp)+4:(temp)+7]), int(line[(temp)+8:(temp)+11])) #set current pixel color based off 3, 3-digit numbers in the file starting from "temp" (aka the cursor).  these 3 numbers correspond to the Red, Green, and Blue values of the pixel.
-            temp += 12 #foward cursor by 12 slots to read next 3 values.
-        except ValueError: #if something somehow goes incredibly wrong, just set the pixel to black.
-            pixles[i, j] = 0
+        inputVar = tkinter.StringVar() #actual variable
 
-img.show() #finally, display the complete image.
+        seedInputArea = tkinter.Entry(root, textvariable=inputVar, width=35)
+        seedInputArea.pack()
+        seedInputArea.place(bordermode='inside', anchor='n', relx=0.65, rely=0.41)
+        #generate image button
+        generateButton = tkinter.Button(root, text="Make me a picture boy!", command=lambda: generate(inputVar.get())) #creates a button
+        generateButton.pack() #makes it show i guess?
+        generateButton.place(bordermode='inside', anchor='n', relx=0.5, rely=0.75) #moves to appropiate position
+
+    else:
+        print("Error, not valid tkinter window")
+        raise SystemExit
+
+root = tkinter.Tk() # instantiates tkinter window
+initWindow(root) #sets everything up
+root.mainloop() #makes the window run i guess?
